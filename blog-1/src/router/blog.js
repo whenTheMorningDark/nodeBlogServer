@@ -1,4 +1,4 @@
-const { getList, getDetail, newBlog, updateBlog } = require("../controller/blog");
+const { getList, getDetail, newBlog, updateBlog, delBlog } = require("../controller/blog");
 const { SuccessModel, ErrorModel } = require("../model/resModel");
 const handleRouter = (req, res) => {
   const method = req.method;
@@ -31,8 +31,11 @@ const handleRouter = (req, res) => {
     }
   }
   if (method === 'POST' && req.path === "/api/blog/del") {
-    return {
-      msg: "删除接口"
+    const result = delBlog(id);
+    if (result) {
+      return new SuccessModel();
+    } else {
+      return new ErrorModel("删除失败!");
     }
   }
 }

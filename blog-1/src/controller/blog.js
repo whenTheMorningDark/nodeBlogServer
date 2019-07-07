@@ -22,9 +22,13 @@ const updateBlog = (id, blogData = {}) => {
   console.log(id, blogData);
   return true;
 }
+const delBlog = (id) => {
+  return true;
+}
 module.exports = {
   getList,
   getDetail,
   newBlog,
-  updateBlog
+  updateBlog,
+  delBlog
 }
