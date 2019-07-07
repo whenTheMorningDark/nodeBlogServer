@@ -11,7 +11,20 @@ const getDetail = (id) => {
     { id: 1, title: "标题1", content: "内容1" },
   ]
 }
+const newBlog = (blogData = {}) => {
+  // blogData博客对象
+  // console.log(blogData);
+  return {
+    id: 3
+  }
+}
+const updateBlog = (id, blogData = {}) => {
+  console.log(id, blogData);
+  return true;
+}
 module.exports = {
   getList,
-  getDetail
+  getDetail,
+  newBlog,
+  updateBlog
 }
