@@ -1,29 +1,59 @@
+const { exec } = require("../db/mysql");
+
+
 const getList = (author, keyword) => {
   // 先返回假数据
-  return [
-    { id: 1, title: "标题1", content: "内容1" },
-    { id: 2, title: "标题2", content: "内容2" },
-    { id: 3, title: "标题3", content: "内容3" }
-  ]
+  let sql = `select * from blogs where 1=1 `
+  if (author) {
+    sql += `and author = '${author}' `
+  }
+  if (keyword) {
+    sql += `and title like '%${keyword}%' `
+  }
+  sql += `order by createtime desc`
+  return exec(sql);
 }
 const getDetail = (id) => {
-  return [
-    { id: 1, title: "标题1", content: "内容1" },
-  ]
+  const sql = `select * from blogs where id='${id}'`;
+  return exec(sql).then(rows => {
+    return rows[0];
+  })
 }
 const newBlog = (blogData = {}) => {
   // blogData博客对象
   // console.log(blogData);
-  return {
-    id: 3
-  }
+  const { title, content, author } = blogData;
+  const createtime = Date.now();
+  const sql = `insert into blogs(title,content,createtime,author) values ('${title}','${content}','${createtime}','${author}')`;
+  return exec(sql).then(insertData => {
+    console.log(insertData);
+    return {
+      id: insertData.insertId
+    }
+  })
 }
 const updateBlog = (id, blogData = {}) => {
-  console.log(id, blogData);
-  return true;
+  // console.log(id, blogData);
+  const { title, content } = blogData;
+  const sql = `update blogs set title='${title}',content='${content}' where id='${id}'`;
+  return exec(sql).then(updateData => {
+    // console.log(updateData);
+    if (updateData.affectedRows > 0) {
+      return true;
+    }
+    return false;
+  });
 }
-const delBlog = (id) => {
-  return true;
+const delBlog = (id, author) => {
+  // return true;
+  const sql = `delete from blogs where id='${id}' and author='${author}'`;
+  return exec(sql).then(delData => {
+    // console.log(delData)
+    if (delData.affectedRows > 0) {
+      return true;
+    }
+    return false;
+  })
 }
 module.exports = {
   getList,
