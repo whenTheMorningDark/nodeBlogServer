@@ -37,6 +37,27 @@ const serverHandler = (req, res) => {
   req.path = url.split('?')[0];
   req.query = querystring.parse(url.split('?')[1]);
 
+  // 解析cookies 转换成对象
+  req.cookie = {};
+  const cookieStr = req.headers.cookie || "";
+  cookieStr.split(":").forEach(item => {
+    if (!item) {
+      return
+    }
+    const arr = item.split(";");
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = arr[i].trim(); // 去除两边的空格
+      const arrKey = arr[i].split("=");
+      const key = arrKey[0];
+      const val = arrKey[1];
+      // console.log(key);
+      req.cookie[key] = val;
+      // console.log(val);
+    }
+    // console.log(req.cookie);
+  })
+
+
   // 处理postdata
   getPostData(req).then(postData => {
     req.body = postData;
@@ -52,6 +73,7 @@ const serverHandler = (req, res) => {
     }
     // 处理user路由
     const userData = handleUserRouter(req, res);
+    // console.log(userData);
     if (userData) {
       userData.then(userData => {
         res.end(
