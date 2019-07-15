@@ -1,5 +1,17 @@
 const { getList, getDetail, newBlog, updateBlog, delBlog } = require("../controller/blog");
 const { SuccessModel, ErrorModel } = require("../model/resModel");
+
+// 定义统一的验证韩式
+const loginCheck = (req) => {
+  if (!req.session.username) {
+    return Promise.resolve(
+      new ErrorModel("更新失败!")
+    )
+  }
+}
+
+
+
 const handleRouter = (req, res) => {
   const method = req.method;
   const id = req.query.id;
@@ -22,7 +34,13 @@ const handleRouter = (req, res) => {
   }
   // 新建
   if (method === 'POST' && req.path === "/api/blog/new") {
-    const author = "咖啡";
+    const loginCheckResult = loginCheck(req);
+    if (loginCheckResult) {
+      //未登陆
+      return loginCheck;
+    }
+
+    const author = req.session.username;
     req.body.author = author;
     const blogData = req.body;
     // console.log(1)
@@ -33,6 +51,11 @@ const handleRouter = (req, res) => {
   }
   // 更新
   if (method === 'POST' && req.path === "/api/blog/update") {
+    const loginCheckResult = loginCheck(req);
+    if (loginCheckResult) {
+      //未登陆
+      return loginCheck;
+    }
     const result = updateBlog(id, req.body);
     return result.then(val => {
       if (val) {
@@ -43,7 +66,12 @@ const handleRouter = (req, res) => {
     })
   }
   if (method === 'POST' && req.path === "/api/blog/del") {
-    const author = "咖啡";
+    const loginCheckResult = loginCheck(req);
+    if (loginCheckResult) {
+      //未登陆
+      return loginCheck;
+    }
+    const author = req.session.username;
     const result = delBlog(id, author);
     return result.then(val => {
       if (val) {
